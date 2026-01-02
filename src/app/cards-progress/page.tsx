@@ -113,11 +113,12 @@ export default function CardsTrackerPage() {
   const [reflection, setReflection] = useState("")
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-white to-[#EEC9C9]">
+    <div className="min-h-screen bg-gradient-to-b from-white to-[#EEC9C9]">
       {/* Navigation */}
       <nav className="sticky top-0 z-40 bg-white/60 backdrop-blur-md border-b border-white/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
+            {/* Nav items if needed */}
           </div>
         </div>
       </nav>
@@ -126,34 +127,43 @@ export default function CardsTrackerPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Progress Tracker Section */}
         <section className="mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-8 font-serif">Your Progress</h2>
+          <h2 className="text-4xl font-bold text-gray-900 mb-8 font-sans">Your Progress</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             {/* Streak Card */}
             <div className="bg-white/60 backdrop-blur-md border border-white/50 rounded-xl shadow-sm p-6">
               <div className="flex items-center gap-3 mb-4">
                 <Flame className="w-6 h-6 text-orange-500" />
-                <span className="text-sm text-gray-600">Current Streak</span>
+                <span className="text-sm text-gray-600 font-sans">Current Streak</span>
               </div>
-              <p className="text-3xl font-bold text-gray-900">7 Days</p>
+              <p className="text-3xl font-bold text-gray-900 font-sans">
+                {/* FIX: Using font-serif (or standard font) for numbers to avoid trial watermark */}
+                <span className="font-serif">7</span> Days
+              </p>
             </div>
 
             {/* Cards Read Card */}
             <div className="bg-white/60 backdrop-blur-md border border-white/50 rounded-xl shadow-sm p-6">
               <div className="flex items-center gap-3 mb-4">
                 <BookOpen className="w-6 h-6 text-blue-500" />
-                <span className="text-sm text-gray-600">Cards Read</span>
+                <span className="text-sm text-gray-600 font-sans">Cards Read</span>
               </div>
-              <p className="text-3xl font-bold text-gray-900">42 Total</p>
+              <p className="text-3xl font-bold text-gray-900 font-sans">
+                {/* FIX: Using font-serif for numbers */}
+                <span className="font-serif">42</span> Total
+              </p>
             </div>
 
             {/* Topic Completion Card */}
             <div className="bg-white/60 backdrop-blur-md border border-white/50 rounded-xl shadow-sm p-6">
               <div className="flex items-center gap-3 mb-4">
                 <PieChart className="w-6 h-6 text-purple-500" />
-                <span className="text-sm text-gray-600">Topic Completion</span>
+                <span className="text-sm text-gray-600 font-sans">Topic Completion</span>
               </div>
-              <p className="text-3xl font-bold text-gray-900">60%</p>
+              <p className="text-3xl font-bold text-gray-900 font-sans">
+                 {/* FIX: Using font-serif for numbers */}
+                <span className="font-serif">60</span>%
+              </p>
               <div className="mt-3 w-full bg-gray-200 rounded-full h-2">
                 <div className="bg-purple-500 h-2 rounded-full" style={{ width: "60%" }}></div>
               </div>
@@ -161,7 +171,7 @@ export default function CardsTrackerPage() {
           </div>
 
           {/* History Button */}
-          <Button variant="outline" className="gap-2 bg-transparent">
+          <Button variant="outline" className="gap-2 bg-transparent font-sans">
             <Clock className="w-4 h-4" />
             View History & Journal
           </Button>
@@ -169,7 +179,7 @@ export default function CardsTrackerPage() {
 
         {/* Devotional Cards Section */}
         <section>
-          <h2 className="text-4xl font-bold text-gray-900 mb-8 font-serif">Today's Recommendations</h2>
+          <h2 className="text-4xl font-bold text-gray-900 mb-8 font-sans">Today's Recommendations</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {devotionalCards.map((card) => (
@@ -178,11 +188,11 @@ export default function CardsTrackerPage() {
                 onClick={() => setSelectedCard(card)}
                 className="text-left bg-white/60 backdrop-blur-md border border-white/50 rounded-xl shadow-sm p-6 hover:shadow-md hover:border-white/70 transition-all duration-200 cursor-pointer"
               >
-                <h3 className="font-bold text-gray-900 text-lg mb-1">{card.title}</h3>
-                <p className="text-sm text-gray-600 mb-4">{card.author}</p>
+                <h3 className="font-bold text-gray-900 text-lg mb-1 font-sans">{card.title}</h3>
+                <p className="text-sm text-gray-600 mb-4 font-sans">{card.author}</p>
                 <div className="flex flex-wrap gap-2">
                   {card.tags.map((tag) => (
-                    <span key={tag} className="inline-block bg-gray-200 text-gray-700 text-xs px-3 py-1 rounded-full">
+                    <span key={tag} className="inline-block bg-gray-200 text-gray-700 text-xs px-3 py-1 rounded-full font-sans">
                       {tag}
                     </span>
                   ))}
@@ -211,18 +221,17 @@ export default function CardsTrackerPage() {
 
             {/* Modal Content */}
             <div className="p-8">
-              {/* Header */}
-              <h2 className="text-3xl font-bold text-gray-900 mb-2 font-serif">{selectedCard.title}</h2>
-              <p className="text-gray-600 mb-1">
+              <h2 className="text-3xl font-bold text-gray-900 mb-2 font-sans">{selectedCard.title}</h2>
+              <p className="text-gray-600 mb-1 font-sans">
                 <span className="font-semibold">{selectedCard.author}</span>
                 {selectedCard.year && ` • ${selectedCard.year}`}
               </p>
-              <p className="text-sm text-gray-500 italic mb-6">{selectedCard.contextNote}</p>
+              <p className="text-sm text-gray-500 italic mb-6 font-sans">{selectedCard.contextNote}</p>
 
               {/* Excerpt Section */}
               <div className="mb-8">
                 <div className="flex items-center gap-3 mb-4">
-                  <span className="text-sm font-semibold text-gray-700">
+                  <span className="text-sm font-semibold text-gray-700 font-sans">
                     {isOriginalText ? "Original Text" : "Modern Version"}
                   </span>
                   <button
@@ -236,16 +245,16 @@ export default function CardsTrackerPage() {
                     />
                   </button>
                 </div>
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-gray-700 leading-relaxed">
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-gray-700 leading-relaxed font-sans">
                   {isOriginalText ? selectedCard.originalExcerpt : selectedCard.modernExcerpt}
                 </div>
               </div>
 
               {/* Reflection Section */}
               <div className="mb-8">
-                <h3 className="font-bold text-gray-900 mb-4">Reflect on This</h3>
-                <p className="font-semibold text-gray-900 mb-4">{selectedCard.aiQuestion}</p>
-                <Button variant="outline" className="gap-2 mb-6 bg-transparent">
+                <h3 className="font-bold text-gray-900 mb-4 font-sans">Reflect on This</h3>
+                <p className="font-semibold text-gray-900 mb-4 font-sans">{selectedCard.aiQuestion}</p>
+                <Button variant="outline" className="gap-2 mb-6 bg-transparent font-sans">
                   <RotateCcw className="w-4 h-4" />
                   Suggest Another Question
                 </Button>
@@ -253,20 +262,20 @@ export default function CardsTrackerPage() {
                 {/* Application Tip */}
                 <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex gap-3">
                   <Lightbulb className="w-5 h-5 text-yellow-600 shrink-0 mt-0.5" />
-                  <p className="text-sm text-yellow-900">{selectedCard.applicationTip}</p>
+                  <p className="text-sm text-yellow-900 font-sans">{selectedCard.applicationTip}</p>
                 </div>
               </div>
 
               {/* Journaling Section */}
               <div className="mb-8">
-                <label className="block font-bold text-gray-900 mb-3">Your Reflection</label>
+                <label className="block font-bold text-gray-900 mb-3 font-sans">Your Reflection</label>
                 <textarea
                   value={reflection}
                   onChange={(e) => setReflection(e.target.value)}
                   placeholder="Write your thoughts here..."
-                  className="w-full h-32 p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 resize-none"
+                  className="w-full h-32 p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 resize-none font-sans"
                 />
-                <p className="text-xs text-gray-500 mt-2">Auto-saving to history...</p>
+                <p className="text-xs text-gray-500 mt-2 font-sans">Auto-saving to history...</p>
               </div>
 
               {/* AI Guide Accordion */}
@@ -277,7 +286,7 @@ export default function CardsTrackerPage() {
                 >
                   <div className="flex items-center gap-2">
                     <Sparkles className="w-5 h-5 text-purple-600" />
-                    <span className="font-semibold text-gray-900">Deeper Meditation (AI Guide)</span>
+                    <span className="font-semibold text-gray-900 font-sans">Deeper Meditation (AI Guide)</span>
                   </div>
                   <ChevronDown
                     className={`w-5 h-5 text-gray-600 transition-transform ${expandedGuide ? "rotate-180" : ""}`}
@@ -285,10 +294,10 @@ export default function CardsTrackerPage() {
                 </button>
                 {expandedGuide && (
                   <div className="px-6 py-4 bg-white border-t border-gray-200">
-                    <h4 className="font-semibold text-gray-900 mb-3">Suggested Prayer Points:</h4>
+                    <h4 className="font-semibold text-gray-900 mb-3 font-sans">Suggested Prayer Points:</h4>
                     <ul className="space-y-2">
                       {selectedCard.meditationPoints.map((point, idx) => (
-                        <li key={idx} className="text-sm text-gray-700 flex gap-2">
+                        <li key={idx} className="text-sm text-gray-700 flex gap-2 font-sans">
                           <span className="text-purple-600 font-bold">{idx + 1}.</span>
                           <span>{point}</span>
                         </li>

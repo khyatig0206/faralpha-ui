@@ -22,9 +22,6 @@ export default function Navbar() {
         <Link href="/cards-progress" className="hover:text-gray-600 transition-colors">
           Cards & Progress
         </Link>
-        <Link href="/discover" className="hover:text-gray-600 transition-colors">
-          Discover
-        </Link>
         <Link href="/ask-questions" className="hover:text-gray-600 transition-colors">
           Ask Questions
         </Link>

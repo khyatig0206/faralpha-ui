@@ -7,7 +7,6 @@ const categories = ["Christian Life", "Theology", "Sermons", "Church History"]
 const difficulties = ["Beginner", "Intermediate", "Advanced"]
 const eras = ["Classics", "Modern"]
 
-// Mock book data
 // Mock book data with working placeholders
 const mockBooks = [
   {
@@ -122,7 +121,7 @@ export default function LibraryPage() {
     <div className="min-h-screen bg-gradient-to-b from-white to-[#EEC9C9]">
       {/* Header */}
       <div className="px-6 md:px-12 py-12 md:py-16">
-        <h1 className="text-4xl md:text-5xl font-serif font-bold text-foreground mb-2">Explore the Library</h1>
+        <h1 className="text-4xl md:text-5xl font-sans font-bold text-foreground mb-2">Explore the Library</h1>
         <p className="text-lg text-gray-600 font-sans">Curated resources for your spiritual journey.</p>
       </div>
 
@@ -131,7 +130,7 @@ export default function LibraryPage() {
         <aside className="w-full md:w-48 flex-shrink-0">
           {/* Category Filter */}
           <div className="mb-8">
-            <h3 className="text-xs uppercase tracking-widest font-bold text-foreground/70 mb-4">Category</h3>
+            <h3 className="text-xs uppercase tracking-widest font-bold text-foreground/70 mb-4 font-sans">Category</h3>
             <div className="space-y-3">
               {categories.map((cat) => (
                 <label key={cat} className="flex items-center gap-3 cursor-pointer">
@@ -141,7 +140,7 @@ export default function LibraryPage() {
                     onChange={() => toggleFilter(cat, selectedCategories, setSelectedCategories)}
                     className="w-4 h-4 rounded border-gray-300"
                   />
-                  <span className="text-sm text-foreground/80">{cat}</span>
+                  <span className="text-sm text-foreground/80 font-sans">{cat}</span>
                 </label>
               ))}
             </div>
@@ -149,7 +148,7 @@ export default function LibraryPage() {
 
           {/* Difficulty Filter */}
           <div className="mb-8">
-            <h3 className="text-xs uppercase tracking-widest font-bold text-foreground/70 mb-4">Difficulty</h3>
+            <h3 className="text-xs uppercase tracking-widest font-bold text-foreground/70 mb-4 font-sans">Difficulty</h3>
             <div className="space-y-3">
               {difficulties.map((diff) => (
                 <label key={diff} className="flex items-center gap-3 cursor-pointer">
@@ -159,7 +158,7 @@ export default function LibraryPage() {
                     onChange={() => toggleFilter(diff, selectedDifficulties, setSelectedDifficulties)}
                     className="w-4 h-4 rounded border-gray-300"
                   />
-                  <span className="text-sm text-foreground/80">{diff}</span>
+                  <span className="text-sm text-foreground/80 font-sans">{diff}</span>
                 </label>
               ))}
             </div>
@@ -167,7 +166,7 @@ export default function LibraryPage() {
 
           {/* Era Filter */}
           <div>
-            <h3 className="text-xs uppercase tracking-widest font-bold text-foreground/70 mb-4">Era</h3>
+            <h3 className="text-xs uppercase tracking-widest font-bold text-foreground/70 mb-4 font-sans">Era</h3>
             <div className="space-y-3">
               {eras.map((era) => (
                 <label key={era} className="flex items-center gap-3 cursor-pointer">
@@ -177,7 +176,7 @@ export default function LibraryPage() {
                     onChange={() => toggleFilter(era, selectedEras, setSelectedEras)}
                     className="w-4 h-4 rounded border-gray-300"
                   />
-                  <span className="text-sm text-foreground/80">{era}</span>
+                  <span className="text-sm text-foreground/80 font-sans">{era}</span>
                 </label>
               ))}
             </div>
@@ -195,7 +194,7 @@ export default function LibraryPage() {
                 placeholder="Search by Title, Author, or Topic..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-white/60 backdrop-blur-sm border border-white/40 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400/50 text-foreground placeholder:text-gray-500"
+                className="w-full pl-12 pr-4 py-3 bg-white/60 backdrop-blur-sm border border-white/40 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400/50 text-foreground placeholder:text-gray-500 font-sans"
               />
             </div>
 
@@ -228,16 +227,17 @@ export default function LibraryPage() {
 
                 {/* Card Content */}
                 <div className="p-4">
-                  <h3 className="font-bold text-foreground text-sm line-clamp-2 mb-1">{book.title}</h3>
-                  <p className="text-xs text-gray-600 mb-3">{book.author}</p>
-                  <p className="text-xs text-gray-700 line-clamp-2 mb-4 leading-relaxed">{book.summary}</p>
+                  {/* UPDATED: Added font-sans to title, author, and summary */}
+                  <h3 className="font-sans font-bold text-foreground text-sm line-clamp-2 mb-1">{book.title}</h3>
+                  <p className="font-sans text-xs text-gray-600 mb-3">{book.author}</p>
+                  <p className="font-sans text-xs text-gray-700 line-clamp-2 mb-4 leading-relaxed">{book.summary}</p>
 
                   {/* Tags */}
                   <div className="flex flex-wrap gap-2">
                     {book.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-700"
+                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-700 font-sans"
                       >
                         {tag}
                       </span>
