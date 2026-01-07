@@ -143,7 +143,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="sticky top-0 z-50 flex items-center px-6 py-4 bg-white/80 backdrop-blur-md border-b border-gray-100/50">
+      <nav className="sticky top-0 z-50 flex items-center px-14 p-4 bg-white/80 backdrop-blur-md border-b border-gray-100/50">
         
         {/* Logo Section */}
         <div className="flex items-center mr-10">
