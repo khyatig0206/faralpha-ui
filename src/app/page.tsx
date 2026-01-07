@@ -207,7 +207,7 @@ export default function Home() {
           Search by authors, books or topics you want to learn or any question you have on the Christian Themes
         </p>
 
-        <div className="relative z-20 w-full max-w-3xl shadow-[0_10px_80px_-20px_rgba(59,130,246,0.4)] rounded-full">
+        <div className="relative z-20 w-full max-w-3xl shadow-[0_8px_80px_-5px_rgba(59,130,246,0.4)] rounded-full">
           <div className="flex items-center p-1 pl-6 bg-white rounded-full border border-gray-100 hover:border-gray-200 transition-colors">
             <Search className="w-5 h-5 text-gray-400 mr-3" />
             <input
