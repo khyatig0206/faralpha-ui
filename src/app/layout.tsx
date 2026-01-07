@@ -15,6 +15,11 @@ const juanaLocal = localFont({
   weight: "700",
   display: "swap",
 });
+const gtStandard = localFont({
+  src: "./fonts/GT-Standard-L-Standard-Light-Trial.woff2",
+  variable: "--font-gt-standard",
+  display: "swap",
+})
 
 const _geist = Geist({ subsets: ["latin"], variable: "--font-geist-sans" });
 const _geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" });
@@ -33,7 +38,7 @@ export default function RootLayout({
   return (
     <html 
       lang="en" 
-      className={`${juanaLocal.variable} ${_inter.variable} ${_geist.variable} ${_geistMono.variable}`}
+      className={`${juanaLocal.variable} ${gtStandard.variable} ${_inter.variable} ${_geist.variable} ${_geistMono.variable}`}
     >
       <body className={`font-sans antialiased`}>
         {/* Render Navbar here so it stays on every page */}
