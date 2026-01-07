@@ -101,22 +101,22 @@ const BookSection = ({ title, items }: { title: string; items: any[] }) => {
   }
 
   return (
-    <div className="relative group w-full">
-      <div className="flex items-center gap-2 mb-6 px-8 md:px-12 lg:px-16">
+    <div className="relative group w-full px-4">
+      <div className="flex items-center gap-2 mb-6 px-4 md:px-6">
         <h2 className="text-sm font-bold text-black tracking-wide uppercase">{title}</h2>
         <ChevronRight className="w-4 h-4 text-gray-400" />
       </div>
 
       <button
         onClick={() => scroll("left")}
-        className="absolute left-4 md:left-6 lg:left-8 top-[55%] -translate-y-1/2 z-20 w-10 h-10 bg-white border border-gray-200 shadow-lg rounded-full flex items-center justify-center text-gray-700 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-105 disabled:opacity-0"
+        className="absolute left-2 top-[55%] -translate-y-1/2 z-20 w-10 h-10 bg-white border border-gray-200 shadow-lg rounded-full flex items-center justify-center text-gray-700 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-105 disabled:opacity-0"
       >
         <ChevronLeft className="w-5 h-5" />
       </button>
 
       <button
         onClick={() => scroll("right")}
-        className="absolute right-4 md:right-6 lg:right-8 top-[55%] -translate-y-1/2 z-20 w-10 h-10 bg-white border border-gray-200 shadow-lg rounded-full flex items-center justify-center text-gray-700 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-105"
+        className="absolute right-2 top-[55%] -translate-y-1/2 z-20 w-10 h-10 bg-white border border-gray-200 shadow-lg rounded-full flex items-center justify-center text-gray-700 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-105"
       >
         <ChevronRight className="w-5 h-5" />
       </button>
@@ -124,7 +124,7 @@ const BookSection = ({ title, items }: { title: string; items: any[] }) => {
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="flex gap-6 overflow-x-auto pb-4 px-8 md:px-12 lg:px-16 snap-x snap-mandatory no-scrollbar scroll-smooth"
+        className="flex gap-6 overflow-x-auto pb-4 px-4 md:px-6 snap-x snap-mandatory no-scrollbar scroll-smooth"
       >
         {items.map((topic, idx) => (
           <TrendingCard key={idx} {...topic} />
@@ -132,11 +132,11 @@ const BookSection = ({ title, items }: { title: string; items: any[] }) => {
       </div>
 
       <div
-        className={`absolute left-0 top-0 bottom-0 w-[60px] md:w-[80px] bg-gradient-to-r from-white via-white/80 to-transparent pointer-events-none z-10 transition-opacity duration-200 ${
+        className={`absolute left-0 top-0 bottom-0 w-[40px] bg-gradient-to-r from-white via-white/80 to-transparent pointer-events-none z-10 transition-opacity duration-200 ${
           showLeftFade ? "opacity-100" : "opacity-0"
         }`}
       />
-      <div className="absolute right-0 top-0 bottom-0 w-[60px] md:w-[80px] bg-gradient-to-l from-white via-white/80 to-transparent pointer-events-none z-10" />
+      <div className="absolute right-0 top-0 bottom-0 w-[40px] bg-gradient-to-l from-white via-white/80 to-transparent pointer-events-none z-10" />
     </div>
   )
 }
