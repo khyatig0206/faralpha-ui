@@ -78,6 +78,7 @@
     --font-sans: "Geist", "Geist Fallback";
     --font-serif: var(--font-serif, "Juana", "serif");
     --font-mono: "Geist Mono", "Geist Mono Fallback";
+    --font-gt-standard: var(--font-gt-standard);
     --color-background: var(--background);
     --color-foreground: var(--foreground);
     --color-card: var(--card);
