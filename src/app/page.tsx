@@ -199,7 +199,7 @@ export default function Home() {
       <div className="relative flex flex-col items-center justify-center px-4 pt-18 pb-20 overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#eef2ff_0%,#ffffff_70%)] -z-10" />
 
-        <h1 className="text-3xl md:text-[50px] leading-[1.1] font-semibold text-center mb-6 text-black tracking-tight font-[family-name:var(--font-gt-standard)]">
+        <h1 className="text-3xl md:text-[50px] leading-[1.1] font-semibold text-center mb-6 text-black tracking-wide font-[family-name:var(--font-gt-standard)]">
         Where should we begin?
       </h1>
 
