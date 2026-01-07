@@ -1,266 +1,233 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Search, Sparkles } from "lucide-react"
+import { useState, useMemo } from "react";
+import { Search, Filter, X, ChevronDown, Check } from "lucide-react";
 
-const categories = ["Christian Life", "Theology", "Sermons", "Church History"]
-const difficulties = ["Beginner", "Intermediate", "Advanced"]
-const eras = ["Classics", "Modern"]
+// --- TYPES ---
+type Book = {
+  id: string;
+  title: string;
+  author: string;
+  year: number;
+  century: number;
+  era: "Early Church" | "Pre-Reformation" | "Reformation" | "Modern";
+  image: string;
+};
 
-// Mock book data with working placeholders
-const mockBooks = [
-  {
-    id: 1,
-    title: "The Pilgrim's Progress",
-    author: "John Bunyan",
-    summary:
-      "A timeless allegory of Christian spiritual journey and growth. Following the protagonist through trials and triumphs.",
-    cover: "https://placehold.co/400x600/eec9c9/592c2c?text=Pilgrim%27s+Progress",
-    tags: ["Theology", "Classics"],
-  },
-  {
-    id: 2,
-    title: "Mere Christianity",
-    author: "C.S. Lewis",
-    summary:
-      "A thoughtful exploration of Christian faith and belief. A foundational work for understanding Christian philosophy.",
-    cover: "https://placehold.co/400x600/eec9c9/592c2c?text=Mere+Christianity",
-    tags: ["Christian Life", "Modern"],
-  },
-  {
-    id: 3,
-    title: "The Shack",
-    author: "William P. Young",
-    summary:
-      "A contemporary story exploring faith, redemption, and God's nature. Challenges traditional theological perspectives.",
-    cover: "https://placehold.co/400x600/eec9c9/592c2c?text=The+Shack",
-    tags: ["Christian Life", "Modern"],
-  },
-  {
-    id: 4,
-    title: "Systematic Theology",
-    author: "Wayne Grudem",
-    summary:
-      "A comprehensive guide to Christian doctrine and theology. Essential reference for serious theological study.",
-    cover: "https://placehold.co/400x600/eec9c9/592c2c?text=Systematic+Theology",
-    tags: ["Theology", "Advanced"],
-  },
-  {
-    id: 5,
-    title: "The Cost of Discipleship",
-    author: "Dietrich Bonhoeffer",
-    summary:
-      "A profound reflection on authentic Christian commitment. Examines the demands and rewards of following Christ.",
-    cover: "https://placehold.co/400x600/eec9c9/592c2c?text=Cost+of+Discipleship",
-    tags: ["Christian Life", "Classics"],
-  },
-  {
-    id: 6,
-    title: "Church History Essentials",
-    author: "Various Authors",
-    summary:
-      "A comprehensive overview of Christian history from early church to modern times. Explores key figures and movements.",
-    cover: "https://placehold.co/400x600/eec9c9/592c2c?text=Church+History",
-    tags: ["Church History", "Modern"],
-  },
-  {
-    id: 7,
-    title: "Knowing God",
-    author: "J.I. Packer",
-    summary:
-      "An accessible introduction to Christian theology and God's attributes. Perfect for believers seeking deeper knowledge.",
-    cover: "https://placehold.co/400x600/eec9c9/592c2c?text=Knowing+God",
-    tags: ["Theology", "Beginner"],
-  },
-  {
-    id: 8,
-    title: "Practicing the Presence of God",
-    author: "Brother Lawrence",
-    summary:
-      "Timeless spiritual classic on living in awareness of God's presence. Simple yet profound spiritual wisdom.",
-    cover: "https://placehold.co/400x600/eec9c9/592c2c?text=Presence+of+God",
-    tags: ["Christian Life", "Classics"],
-  },
+// --- MOCK DATA ---
+const ALL_BOOKS: Book[] = [
+  // 1st - 5th Century (Early Church)
+  { id: "1", title: "Didache", author: "Unknown", year: 100, century: 1, era: "Early Church", image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&q=80&w=1000" },
+  { id: "2", title: "Confessions", author: "Augustine of Hippo", year: 397, century: 4, era: "Early Church", image: "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&q=80&w=1000" },
+  { id: "3", title: "City of God", author: "Augustine of Hippo", year: 426, century: 5, era: "Early Church", image: "https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&q=80&w=1000" },
+  { id: "4", title: "On the Incarnation", author: "Athanasius", year: 318, century: 4, era: "Early Church", image: "https://images.unsplash.com/photo-1491841573634-28140fc7ced7?auto=format&fit=crop&q=80&w=1000" },
+  
+  // 16th Century (Reformation)
+  { id: "5", title: "The Bondage of the Will", author: "Martin Luther", year: 1525, century: 16, era: "Reformation", image: "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&q=80&w=1000" },
+  { id: "6", title: "Institutes of the Christian Religion", author: "John Calvin", year: 1536, century: 16, era: "Reformation", image: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80&w=1000" },
+  
+  // 17th - 19th Century (Post-Reformation / Modern)
+  { id: "7", title: "The Pilgrim's Progress", author: "John Bunyan", year: 1678, century: 17, era: "Reformation", image: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&q=80&w=1000" },
+  
+  // 20th - 21st Century (Modern)
+  { id: "8", title: "Mere Christianity", author: "C.S. Lewis", year: 1952, century: 20, era: "Modern", image: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&q=80&w=1000" },
+  { id: "9", title: "The Cost of Discipleship", author: "Dietrich Bonhoeffer", year: 1937, century: 20, era: "Modern", image: "https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?auto=format&fit=crop&q=80&w=1000" },
+  { id: "10", title: "Knowing God", author: "J.I. Packer", year: 1973, century: 20, era: "Modern", image: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&q=80&w=1000" },
 ];
 
+const ERAS = ["Early Church", "Reformation", "Modern"];
+const CENTURIES = Array.from({ length: 21 }, (_, i) => i + 1); // [1, 2, ... 21]
+
 export default function LibraryPage() {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [sortBy, setSortBy] = useState("recommended")
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
-  const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>([])
-  const [selectedEras, setSelectedEras] = useState<string[]>([])
+  // --- STATE ---
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedEra, setSelectedEra] = useState<string | null>(null);
+  const [selectedCentury, setSelectedCentury] = useState<number | null>(null);
+  const [showFilters, setShowFilters] = useState(false); // Mobile toggle
 
-  const toggleFilter = (item: string, list: string[], setList: (items: string[]) => void) => {
-    if (list.includes(item)) {
-      setList(list.filter((i) => i !== item))
-    } else {
-      setList([...list, item])
-    }
-  }
+  // --- FILTER LOGIC ---
+  const filteredBooks = useMemo(() => {
+    return ALL_BOOKS.filter((book) => {
+      // 1. Author Search
+      const matchesSearch = book.author.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      // 2. Era Filter
+      const matchesEra = selectedEra ? book.era === selectedEra : true;
+      
+      // 3. Century Filter
+      const matchesCentury = selectedCentury ? book.century === selectedCentury : true;
 
-  // Filter books based on selections
-  let filteredBooks = mockBooks.filter((book) => {
-    const matchesSearch =
-      book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      book.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      book.summary.toLowerCase().includes(searchQuery.toLowerCase())
+      return matchesSearch && matchesEra && matchesCentury;
+    });
+  }, [searchQuery, selectedEra, selectedCentury]);
 
-    const matchesCategory = selectedCategories.length === 0 || selectedCategories.some((cat) => book.tags.includes(cat))
-
-    return matchesSearch && matchesCategory
-  })
-
-  // Sort books
-  if (sortBy === "popular") {
-    filteredBooks = [...filteredBooks].sort(() => Math.random() - 0.5)
-  } else if (sortBy === "added") {
-    filteredBooks = [...filteredBooks].reverse()
-  }
+  // --- HANDLERS ---
+  const clearFilters = () => {
+    setSelectedEra(null);
+    setSelectedCentury(null);
+    setSearchQuery("");
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-[#EEC9C9]">
-      {/* Header */}
-      <div className="px-6 md:px-12 py-12 md:py-16">
-        <h1 className="text-4xl md:text-5xl font-sans font-bold text-foreground mb-2">Explore the Library</h1>
-        <p className="text-lg text-gray-600 font-sans">Curated resources for your spiritual journey.</p>
+    <div className="min-h-screen bg-white font-sans">
+      
+      {/* Page Header */}
+      <div className="bg-gray-50/50 border-b border-gray-100 py-12 px-6">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-4xl md:text-5xl font-serif font-bold text-gray-900 mb-4">
+            The Library
+          </h1>
+          <p className="text-gray-500 max-w-2xl text-lg">
+            Explore 2,000 years of Christian thought. Filter by era, century, or search for your favorite theologians.
+          </p>
+        </div>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-8 px-6 md:px-12 pb-20">
-        {/* Sidebar */}
-        <aside className="w-full md:w-48 flex-shrink-0">
-          {/* Category Filter */}
-          <div className="mb-8">
-            <h3 className="text-xs uppercase tracking-widest font-bold text-foreground/70 mb-4 font-sans">Category</h3>
-            <div className="space-y-3">
-              {categories.map((cat) => (
-                <label key={cat} className="flex items-center gap-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={selectedCategories.includes(cat)}
-                    onChange={() => toggleFilter(cat, selectedCategories, setSelectedCategories)}
-                    className="w-4 h-4 rounded border-gray-300"
-                  />
-                  <span className="text-sm text-foreground/80 font-sans">{cat}</span>
-                </label>
-              ))}
+      <div className="max-w-7xl mx-auto px-6 py-8 flex flex-col lg:flex-row gap-8">
+        
+        {/* --- SIDEBAR FILTERS --- */}
+        <aside className={`lg:w-64 flex-shrink-0 space-y-8 ${showFilters ? 'block' : 'hidden lg:block'}`}>
+          
+          {/* Active Filters Summary */}
+          {(selectedEra || selectedCentury) && (
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold uppercase text-gray-400 tracking-wider">Active Filters</span>
+                <button onClick={clearFilters} className="text-xs text-blue-600 hover:underline">Clear all</button>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {selectedEra && (
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 rounded text-xs font-medium">
+                    {selectedEra} <X className="w-3 h-3 cursor-pointer" onClick={() => setSelectedEra(null)}/>
+                  </span>
+                )}
+                {selectedCentury && (
+                  <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 rounded text-xs font-medium">
+                    {selectedCentury}th Century <X className="w-3 h-3 cursor-pointer" onClick={() => setSelectedCentury(null)}/>
+                  </span>
+                )}
+              </div>
             </div>
-          </div>
-
-          {/* Difficulty Filter */}
-          <div className="mb-8">
-            <h3 className="text-xs uppercase tracking-widest font-bold text-foreground/70 mb-4 font-sans">Difficulty</h3>
-            <div className="space-y-3">
-              {difficulties.map((diff) => (
-                <label key={diff} className="flex items-center gap-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={selectedDifficulties.includes(diff)}
-                    onChange={() => toggleFilter(diff, selectedDifficulties, setSelectedDifficulties)}
-                    className="w-4 h-4 rounded border-gray-300"
-                  />
-                  <span className="text-sm text-foreground/80 font-sans">{diff}</span>
-                </label>
-              ))}
-            </div>
-          </div>
+          )}
 
           {/* Era Filter */}
           <div>
-            <h3 className="text-xs uppercase tracking-widest font-bold text-foreground/70 mb-4 font-sans">Era</h3>
-            <div className="space-y-3">
-              {eras.map((era) => (
-                <label key={era} className="flex items-center gap-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={selectedEras.includes(era)}
-                    onChange={() => toggleFilter(era, selectedEras, setSelectedEras)}
-                    className="w-4 h-4 rounded border-gray-300"
+            <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wide mb-3">By Era</h3>
+            <div className="space-y-2">
+              {ERAS.map((era) => (
+                <label key={era} className="flex items-center gap-3 cursor-pointer group">
+                  <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors ${selectedEra === era ? 'border-black bg-black' : 'border-gray-300 group-hover:border-gray-400'}`}>
+                    {selectedEra === era && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
+                  </div>
+                  <input 
+                    type="radio" 
+                    name="era" 
+                    className="hidden" 
+                    checked={selectedEra === era} 
+                    onChange={() => {
+                        setSelectedEra(era); 
+                        setSelectedCentury(null); // Optional: clear century if era changes
+                    }} 
                   />
-                  <span className="text-sm text-foreground/80 font-sans">{era}</span>
+                  <span className={`text-sm ${selectedEra === era ? 'text-gray-900 font-medium' : 'text-gray-600'}`}>{era}</span>
                 </label>
+              ))}
+            </div>
+          </div>
+
+          {/* Century Filter */}
+          <div>
+            <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wide mb-3">By Century</h3>
+            <div className="grid grid-cols-3 gap-2">
+              {CENTURIES.map((cent) => (
+                <button
+                  key={cent}
+                  onClick={() => setSelectedCentury(selectedCentury === cent ? null : cent)}
+                  className={`px-2 py-1.5 text-xs rounded border transition-all ${
+                    selectedCentury === cent 
+                      ? "bg-black text-white border-black" 
+                      : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
+                  }`}
+                >
+                  {cent}th
+                </button>
               ))}
             </div>
           </div>
         </aside>
 
-        {/* Main Content */}
+        {/* --- MAIN CONTENT --- */}
         <div className="flex-1">
-          {/* Search and Sort Row */}
-          <div className="flex flex-col md:flex-row gap-4 mb-8">
+          
+          {/* Search Bar & Mobile Filter Toggle */}
+          <div className="flex gap-4 mb-8">
             <div className="flex-1 relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-600" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search by Title, Author, or Topic..."
+                placeholder="Search by author name..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-white/60 backdrop-blur-sm border border-white/40 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400/50 text-foreground placeholder:text-gray-500 font-sans"
+                className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-full text-sm outline-none focus:border-gray-400 focus:bg-white transition-all"
               />
             </div>
-
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="px-4 py-3 bg-white/60 backdrop-blur-sm border border-white/40 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400/50 text-foreground font-sans"
+            
+            {/* Mobile Filter Button */}
+            <button 
+              className="lg:hidden px-4 py-2 border border-gray-200 rounded-full flex items-center gap-2 hover:bg-gray-50"
+              onClick={() => setShowFilters(!showFilters)}
             >
-              <option value="recommended">AI Recommended</option>
-              <option value="popular">Most Popular</option>
-              <option value="added">Newly Added</option>
-            </select>
+              <Filter className="w-4 h-4" />
+              <span className="text-sm font-medium">Filters</span>
+            </button>
           </div>
 
-          {/* Book Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {filteredBooks.map((book) => (
-              <div
-                key={book.id}
-                className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden group cursor-pointer"
-              >
-                {/* Book Cover */}
-                <div className="h-48 bg-gray-200 overflow-hidden">
-                  <img
-                    src={book.cover || "/placeholder.svg"}
-                    alt={book.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-
-                {/* Card Content */}
-                <div className="p-4">
-                  {/* UPDATED: Added font-sans to title, author, and summary */}
-                  <h3 className="font-sans font-bold text-foreground text-sm line-clamp-2 mb-1">{book.title}</h3>
-                  <p className="font-sans text-xs text-gray-600 mb-3">{book.author}</p>
-                  <p className="font-sans text-xs text-gray-700 line-clamp-2 mb-4 leading-relaxed">{book.summary}</p>
-
-                  {/* Tags */}
-                  <div className="flex flex-wrap gap-2">
-                    {book.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-700 font-sans"
-                      >
-                        {tag}
-                      </span>
-                    ))}
+          {/* Results Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredBooks.length > 0 ? (
+              filteredBooks.map((book) => (
+                <div key={book.id} className="group cursor-pointer">
+                  {/* Book Cover / Card */}
+                  <div className="relative aspect-[3/4] mb-4 rounded-xl overflow-hidden bg-gray-100 shadow-sm transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-md">
+                    <img 
+                        src={book.image} 
+                        alt={book.title}
+                        className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60" />
+                    <div className="absolute bottom-4 left-4 right-4 text-white">
+                         <span className="inline-block px-2 py-0.5 bg-white/20 backdrop-blur-md rounded text-[10px] font-bold uppercase tracking-wider mb-2 border border-white/20">
+                            {book.century}th Century
+                         </span>
+                    </div>
+                  </div>
+                  
+                  {/* Metadata */}
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900 leading-tight mb-1 group-hover:text-blue-600 transition-colors">
+                        {book.title}
+                    </h3>
+                    <p className="text-sm text-gray-500 font-medium">{book.author}</p>
+                    <p className="text-xs text-gray-400 mt-1">{book.year} AD</p>
                   </div>
                 </div>
+              ))
+            ) : (
+              <div className="col-span-full py-20 text-center">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Search className="w-6 h-6 text-gray-400" />
+                </div>
+                <h3 className="text-lg font-bold text-gray-900">No books found</h3>
+                <p className="text-gray-500">Try adjusting your filters or search query.</p>
+                <button onClick={clearFilters} className="mt-4 text-sm font-semibold text-blue-600 hover:underline">
+                    Clear all filters
+                </button>
               </div>
-            ))}
+            )}
           </div>
 
-          {filteredBooks.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-gray-600 font-sans">No books found matching your filters.</p>
-            </div>
-          )}
         </div>
       </div>
-
-      {/* Floating AI Guide Button */}
-      <button className="fixed bottom-8 right-8 bg-black text-white px-6 py-3 rounded-full flex items-center gap-2 hover:bg-gray-900 transition-colors shadow-lg group">
-        <Sparkles className="w-5 h-5" />
-        <span className="font-sans font-medium">AI Guide</span>
-      </button>
     </div>
-  )
+  );
 }

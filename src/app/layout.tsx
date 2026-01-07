@@ -1,49 +1,47 @@
+import type React from "react";
 import type { Metadata } from "next";
-import localFont from "next/font/local"; // Import localFont loader
+import { Geist, Geist_Mono, Inter } from "next/font/google";
+import localFont from "next/font/local";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
+
+// IMPORT THE NAVBAR
 import Navbar from "@/src/components/layout/navBar"; 
 
-// 1. Load Boring Sans (Your Body/Sans Font)
-const boringSans = localFont({
-  src: "./fonts/Boring-Sans-A-Regular-trial.ttf",
-  variable: "--font-sans",
-  weight: "400",
+// Configure Local Font (Juana Alt Bold)
+const juanaLocal = localFont({
+  src: "./fonts/Juana Alt Bold.ttf",
+  variable: "--font-serif",
+  weight: "700",
   display: "swap",
 });
 
-// 2. Load Juana (Your Heading/Serif Font)
-const juana = localFont({
-  src: "./fonts/Fontspring-DEMO-juana-semibold.otf",
-  variable: "--font-serif",
-  weight: "600",
-  display: "swap",
-});
+const _geist = Geist({ subsets: ["latin"], variable: "--font-geist-sans" });
+const _geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" });
+const _inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   title: "Christian Books AI",
-  description: "AI-powered Christian literature platform",
+  description: "Explore curated Christian literature and theology books",
 };
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
-    <html lang="en">
-      <body className={`${boringSans.variable} ${juana.variable} antialiased bg-background text-foreground`}>
-        <div className="flex flex-col min-h-screen">
-          <Navbar />
-          <main className="grow">
-            {children}
-          </main>
-          {/* Re-added the footer we designed earlier */}
-          <footer className="py-8 border-t border-border bg-muted/30">
-            <div className="max-w-7xl mx-auto px-4 text-center text-sm text-muted-foreground">
-              © 2026 Christian Books AI. All rights reserved.
-            </div>
-          </footer>
-        </div>
+    <html 
+      lang="en" 
+      className={`${juanaLocal.variable} ${_inter.variable} ${_geist.variable} ${_geistMono.variable}`}
+    >
+      <body className={`font-sans antialiased`}>
+        {/* Render Navbar here so it stays on every page */}
+        <Navbar />
+        
+        {children}
+        
+        <Analytics />
       </body>
     </html>
   );
