@@ -1,3 +1,4 @@
+export const runtime = "nodejs";
 import { openai } from '@/src/lib/ai';
 import { NextResponse } from 'next/server';
 
