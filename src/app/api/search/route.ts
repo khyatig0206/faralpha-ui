@@ -2,6 +2,28 @@ export const runtime = "nodejs";
 import { openai } from '@/src/lib/ai'; 
 import { NextResponse } from 'next/server';
 
+// Helper function to fetch cover from Google Books API
+async function fetchBookCover(title: string, author: string) {
+    try {
+        const query = `intitle:${encodeURIComponent(title)}+inauthor:${encodeURIComponent(author)}`;
+        const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${query}&maxResults=1`);
+        
+        if (!res.ok) return null;
+        
+        const data = await res.json();
+        const book = data.items?.[0]?.volumeInfo;
+        
+        // Get the thumbnail if it exists
+        const imageLink = book?.imageLinks?.thumbnail || book?.imageLinks?.smallThumbnail;
+        
+        // Ensure HTTPS to avoid mixed content warnings
+        return imageLink ? imageLink.replace('http://', 'https://') : null;
+    } catch (error) {
+        console.error(`Failed to fetch cover for ${title}:`, error);
+        return null;
+    }
+}
+
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const query = searchParams.get('q');
@@ -32,7 +54,6 @@ You must respond with a valid JSON object strictly matching the following schema
       "author": "Author Name",
       "year": 1952,
       "category": "Category",
-      "coverImage": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=1000&auto=format&fit=crop", 
       "summary": "1 sentence summary.",
       "whyWritten": "2 sentences on why this book was written.",
       "aiInterpretation": "2 sentences on the theological argument.",
@@ -43,36 +64,51 @@ You must respond with a valid JSON object strictly matching the following schema
 `;
 
     try {
+        // 1. Ask AI for the recommendations (Metadata only)
         const response = await openai.chat.completions.create({
-            // FIXED: Use the correct model name. 'gpt-4o-mini' is strictly better for JSON.
             model: 'gpt-4o-mini', 
             messages: [
                 { role: 'system', content: systemPrompt },
                 { role: 'user', content: query },
             ],
-            // This forces the AI to output valid JSON
             response_format: { type: 'json_object' },
-            // Ensure enough tokens are reserved for the answer
             max_tokens: 2000, 
             temperature: 0.7,
         });
 
         const content = response.choices[0].message.content;
         if (!content) throw new Error('No content received from OpenAI');
-
-        // Check if the content looks cut off before parsing
+        
+        // Check for truncation
         if (!content.trim().endsWith('}')) {
-             console.error("OpenAI response truncated:", content.substring(content.length - 100));
              throw new Error('Response truncated');
         }
 
         const data = JSON.parse(content);
-        return NextResponse.json(data);
+
+        // 2. Enhance results with Real Images from Google Books
+        // We run this in parallel for speed
+        const resultsWithImages = await Promise.all(data.results.map(async (book: any) => {
+            const realCover = await fetchBookCover(book.title, book.author);
+            
+            return {
+                ...book,
+                // Use real cover if found, otherwise fallback to a generic placeholder
+                image: realCover || "https://placehold.co/400x600?text=No+Cover+Found" 
+            };
+        }));
+
+        // 3. Return combined data
+        return NextResponse.json({
+            aiOverview: data.aiOverview,
+            results: resultsWithImages
+        });
+
     } catch (error) {
         console.error('Error in search API:', error);
         return NextResponse.json({ 
             aiOverview: { content: "We are currently experiencing high traffic. Please try again." },
             results: [] 
-        }, { status: 200 }); // Return empty valid data instead of crashing
+        }, { status: 200 });
     }
 }
