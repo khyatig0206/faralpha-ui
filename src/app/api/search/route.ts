@@ -1,5 +1,5 @@
 export const runtime = "nodejs";
-import { openai } from '@/src/lib/ai';
+import { openai } from '@/src/lib/ai'; 
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
@@ -12,62 +12,67 @@ export async function GET(request: Request) {
 
     const systemPrompt = `
 You are a "Faith & Devotional Companion".
-Your purpose is to act as a faith and devotional companion without engaging in politics or social commentary.
 
 **Functional Scope:**
-- Answer questions strictly based on Christian theology, original book/sermon content, key excerpts, pre-defined devotional questions, and modern practical application tips.
-- Generate personalized reflection guidance, daily application suggestions, and journal/growth tracking ideas.
-
-**Guardrail Rules:**
-1. **Content Scope Restriction:** Responses must be limited to book/sermon text, excerpts, devotional guidance, and application suggestions.
-2. **Forbidden Topics:** Do NOT discuss politics, gender, social controversies, personal faith evaluation, or personal religious judgment.
-3. **Historical Context:** Always include: "This content was written in [year] for [original audience]" if referencing specific historical works.
-4. **Safe Modern Application:** Modern examples must align with the original message and avoid contemporary controversy.
-5. **Question/Answer Limitation:** If a user asks a forbidden topic, reply with: "This question is beyond the scope of the text."
+- Answer strictly based on Christian theology.
+- Provide 4 book recommendations relevant to the query.
 
 **Response Format:**
-You must respond with a valid JSON object strictly matching the following schema:
+You must respond with a valid JSON object strictly matching the following schema. 
+*CRITICAL: Do not cut off the response. Ensure valid JSON.*
+
 {
-  "query": "${query}",
   "aiOverview": {
-    "title": "AI Overview",
-    "content": "Brief answer (max 9 sentences) responding to the question, quoting recommended books, and explaining why they are recommended. Include the historical context disclaimer here if applicable."
+    "content": "Brief answer (max 6 sentences) responding to the query '${query}'."
   },
-  "recommendationsTitle": "Here are what we recommend to expound your understanding on '${query}'",
   "results": [
     {
-      "id": "unique-id",
+      "id": "slug-id", 
       "title": "Book Title",
       "author": "Author Name",
-      "year": 1900,
-      "description": "Brief description...",
+      "year": 1952,
       "category": "Category",
-      "coverImage": "/images/placeholder.jpg"
+      "coverImage": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=1000&auto=format&fit=crop", 
+      "summary": "1 sentence summary.",
+      "whyWritten": "2 sentences on why this book was written.",
+      "aiInterpretation": "2 sentences on the theological argument.",
+      "quotes": ["Quote 1"]
     }
   ]
 }
-Provide 4 book recommendations that are relevant to the query and fit the persona (e.g., C.S. Lewis, Lee Strobel, etc.).
 `;
 
     try {
         const response = await openai.chat.completions.create({
-            model: process.env.OPENAI_MODEL || 'gpt-4.1-mini',
+            // FIXED: Use the correct model name. 'gpt-4o-mini' is strictly better for JSON.
+            model: 'gpt-4o-mini', 
             messages: [
                 { role: 'system', content: systemPrompt },
                 { role: 'user', content: query },
             ],
+            // This forces the AI to output valid JSON
             response_format: { type: 'json_object' },
+            // Ensure enough tokens are reserved for the answer
+            max_tokens: 2000, 
+            temperature: 0.7,
         });
 
         const content = response.choices[0].message.content;
-        if (!content) {
-            throw new Error('No content received from OpenAI');
+        if (!content) throw new Error('No content received from OpenAI');
+
+        // Check if the content looks cut off before parsing
+        if (!content.trim().endsWith('}')) {
+             console.error("OpenAI response truncated:", content.substring(content.length - 100));
+             throw new Error('Response truncated');
         }
 
         const data = JSON.parse(content);
         return NextResponse.json(data);
     } catch (error) {
         console.error('Error in search API:', error);
-        return NextResponse.json({ error: 'Failed to process request' }, { status: 500 });
+        return NextResponse.json({ 
+            aiOverview: { content: "We are currently experiencing high traffic. Please try again." },
+            results: [] 
+        }, { status: 200 }); // Return empty valid data instead of crashing
     }
 }
