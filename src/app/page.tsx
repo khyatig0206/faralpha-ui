@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { ChevronRight, ChevronLeft, Search } from "lucide-react"
 
 // --- COMPONENTS ---
@@ -52,7 +53,6 @@ const BookSection = ({ title, items }: { title: string; items: any[] }) => {
   useEffect(() => {
     if (scrollRef.current && initialScrollLeft.current === null) {
       initialScrollLeft.current = scrollRef.current.scrollLeft
-      console.log("[v0] Initial scrollLeft captured:", initialScrollLeft.current)
     }
   }, [])
 
@@ -75,15 +75,6 @@ const BookSection = ({ title, items }: { title: string; items: any[] }) => {
     const TOLERANCE = 10
     const hasScrolledAway = Math.abs(scrollLeft - initialScrollLeft.current) > TOLERANCE
 
-    console.log(
-      "[v0] scrollLeft:",
-      scrollLeft,
-      "initial:",
-      initialScrollLeft.current,
-      "hasScrolledAway:",
-      hasScrolledAway,
-    )
-
     if (hasScrolledAway) {
       setShowLeftFade(true)
     }
@@ -92,9 +83,6 @@ const BookSection = ({ title, items }: { title: string; items: any[] }) => {
       if (scrollRef.current && initialScrollLeft.current !== null) {
         const finalScrollLeft = scrollRef.current.scrollLeft
         const isAtInitial = Math.abs(finalScrollLeft - initialScrollLeft.current) <= TOLERANCE
-
-        console.log("[v0] Final scrollLeft:", finalScrollLeft, "isAtInitial:", isAtInitial)
-
         setShowLeftFade(!isAtInitial)
       }
     }, 150)
@@ -144,7 +132,30 @@ const BookSection = ({ title, items }: { title: string; items: any[] }) => {
 // --- MAIN PAGE ---
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState("hire")
+  const router = useRouter()
+  const [query, setQuery] = useState("")
+
+  // Function to handle the search logic
+  const performSearch = () => {
+    console.log("Triggering search for:", query) // Debug log
+    if (query.trim()) {
+      router.push(`/search?q=${encodeURIComponent(query)}`)
+    }
+  }
+
+  // Handle Form Submit (Clicking Button or Enter in some cases)
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    performSearch()
+  }
+
+  // Handle Enter Key specifically on Input
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault() // Prevent default form submit if needed
+      performSearch()
+    }
+  }
 
   const bookTopics = [
     {
@@ -199,26 +210,38 @@ export default function Home() {
       <div className="relative flex flex-col items-center justify-center px-4 pt-18 pb-20 overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#eef2ff_0%,#ffffff_70%)] -z-10" />
 
-        <h1 className="text-3xl md:text-[50px] leading-[1.1] font-semibold text-center mb-6 text-black tracking-wide font-[family-name:var(--font-gt-standard)]">
-        Where should we begin?
-      </h1>
+        <h1 className="text-3xl md:text-[50px] leading-[1.1] font-semibold text-center mb-6 text-black tracking-wide font-gt-standard">
+          Where should we begin?
+        </h1>
 
         <p className="text-center text-slate-500 mb-12 max-w-2xl text-sm md:text-[18px] leading-relaxed">
           Search by authors, books or topics you want to learn or any question you have on the Christian Themes
         </p>
 
         <div className="relative z-20 w-full max-w-3xl shadow-[0_8px_80px_-5px_rgba(59,130,246,0.4)] rounded-full">
-          <div className="flex items-center justify-center md:justify-start p-1 pl-4 md:pl-6 bg-white rounded-full border border-gray-100 hover:border-gray-200 transition-colors">
-            <Search className="w-4 h-4 md:w-5 md:h-5 text-gray-400 mr-2 md:mr-3" />
+          <form 
+            onSubmit={handleSearchSubmit}
+            className="flex items-center justify-center md:justify-start p-1 pl-4 md:pl-6 bg-white rounded-full border border-gray-100 hover:border-gray-200 transition-colors"
+          >
+            <Search 
+              onClick={performSearch} 
+              className="w-4 h-4 md:w-5 md:h-5 text-gray-400 mr-2 md:mr-3 cursor-pointer hover:text-gray-600 transition-colors" 
+            />
             <input
               type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
               placeholder="What do you want to study today?"
               className="flex-1 bg-transparent border-none outline-none text-gray-900 placeholder:text-gray-400 text-sm md:text-[17px] py-2 md:py-0 text-center md:text-left"
             />
-            <button className="hidden md:flex bg-[#1a1b1e] text-white rounded-full px-8 py-3.5 text-[15px] font-medium hover:bg-black transition-colors whitespace-nowrap ml-2">
+            <button 
+              type="submit"
+              className="hidden md:flex bg-[#1a1b1e] text-white rounded-full px-8 py-3.5 text-[15px] font-medium hover:bg-black transition-colors whitespace-nowrap ml-2"
+            >
               Browse 1M+ Christian Books
             </button>
-          </div>
+          </form>
         </div>
       </div>
 
