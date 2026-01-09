@@ -110,15 +110,15 @@ export default function SearchResults() {
                 // 2. IMPORTANT: We construct the URLSearchParams here
                 // We explicitly include 'q' so the next page knows where to go back to
                 const bookParams = new URLSearchParams({
-                  q: query, // <--- Passing "Truth" (or whatever was searched)
-                  title: book.title,
-                  author: book.author,
-                  year: String(book.year),
-                  image: imageUrl,
-                  category: book.category,
-                  summary: book.summary,
-                  whyWritten: book.whyWritten,
-                  aiInterpretation: book.aiInterpretation,
+                  q: query || "",
+                  title: book.title || "",
+                  author: book.author || "",
+                  year: String(book.year || ""),
+                  image: imageUrl || "",
+                  category: book.category || "",
+                  summary: book.summary || "",
+                  whyWritten: book.whyWritten || "",
+                  aiInterpretation: book.aiInterpretation || "",
                   quotes: JSON.stringify(book.quotes || [])
                 }).toString()
 
