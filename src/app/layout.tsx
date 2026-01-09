@@ -6,7 +6,8 @@ import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 // IMPORT THE NAVBAR
-import Navbar from "@/src/components/layout/navBar"; 
+import Navbar from "@/src/components/layout/navBar";
+import { SearchProvider } from "@/src/context/SearchContext";
 
 // Configure Local Font (Juana Alt Bold)
 const juanaLocal = localFont({
@@ -36,16 +37,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html 
-      lang="en" 
+    <html
+      lang="en"
       className={`${juanaLocal.variable} ${gtStandard.variable} ${_inter.variable} ${_geist.variable} ${_geistMono.variable}`}
     >
       <body className={`font-sans antialiased`}>
-        {/* Render Navbar here so it stays on every page */}
-        <Navbar />
-        
-        {children}
-        
+        <SearchProvider>
+          {/* Render Navbar here so it stays on every page */}
+          <Navbar />
+
+          {children}
+        </SearchProvider>
+
         <Analytics />
       </body>
     </html>
